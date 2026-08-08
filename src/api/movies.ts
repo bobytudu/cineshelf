@@ -21,22 +21,34 @@ export type MoviesFilterResponse = {
   pager: MoviesPager;
 };
 
-const BASE = 'https://api2.imdb3.shop/api/movies/filter';
+/** Browser calls go through the Vite proxy to avoid CORS. */
+const RELATIVE_BASE = '/api/movies/filter';
+const ABSOLUTE_BASE = 'https://api2.imdb3.shop/api/movies/filter';
 
-export async function fetchMovies(options: {
-  page: number;
-  fetchImpl?: typeof fetch;
-}): Promise<MoviesFilterResponse> {
-  const { page, fetchImpl = fetch } = options;
-  const url = new URL(BASE);
+export function buildMoviesUrl(
+  page: number,
+  options?: { absolute?: boolean },
+): string {
+  const base = options?.absolute ? ABSOLUTE_BASE : RELATIVE_BASE;
+  const url = new URL(base, 'https://api2.imdb3.shop');
   url.searchParams.set('sort_by', 'date');
   url.searchParams.set('dubbing', 'Hindi');
   url.searchParams.set('country', 'india');
   url.searchParams.set('items_per_page', '30');
   url.searchParams.set('cache', 'home');
   url.searchParams.set('page', String(page));
+  if (options?.absolute) {
+    return url.toString();
+  }
+  return `${url.pathname}?${url.searchParams.toString()}`;
+}
 
-  const res = await fetchImpl(url.toString());
+export async function fetchMovies(options: {
+  page: number;
+  fetchImpl?: typeof fetch;
+}): Promise<MoviesFilterResponse> {
+  const { page, fetchImpl = fetch } = options;
+  const res = await fetchImpl(buildMoviesUrl(page));
   if (!res.ok) {
     throw new Error(`Failed to fetch movies (${res.status})`);
   }

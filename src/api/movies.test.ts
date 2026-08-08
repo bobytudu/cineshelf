@@ -1,5 +1,22 @@
 import { describe, it, expect, vi } from 'vitest';
-import { fetchMovies } from './movies';
+import { buildMoviesUrl, fetchMovies } from './movies';
+
+describe('buildMoviesUrl', () => {
+  it('builds relative and absolute filter URLs', () => {
+    const relative = buildMoviesUrl(2);
+    expect(relative.startsWith('/api/movies/filter?')).toBe(true);
+    expect(relative).toContain('sort_by=date');
+    expect(relative).toContain('dubbing=Hindi');
+    expect(relative).toContain('country=india');
+    expect(relative).toContain('items_per_page=30');
+    expect(relative).toContain('cache=home');
+    expect(relative).toContain('page=2');
+
+    const absolute = buildMoviesUrl(2, { absolute: true });
+    expect(absolute).toContain('https://api2.imdb3.shop/api/movies/filter?');
+    expect(absolute).toContain('page=2');
+  });
+});
 
 describe('fetchMovies', () => {
   it('requests the filter API with fixed filters and page', async () => {
@@ -30,14 +47,7 @@ describe('fetchMovies', () => {
     const data = await fetchMovies({ page: 2, fetchImpl });
 
     expect(fetchImpl).toHaveBeenCalledOnce();
-    const url = String(fetchImpl.mock.calls[0][0]);
-    expect(url).toContain('https://api2.imdb3.shop/api/movies/filter?');
-    expect(url).toContain('sort_by=date');
-    expect(url).toContain('dubbing=Hindi');
-    expect(url).toContain('country=india');
-    expect(url).toContain('items_per_page=30');
-    expect(url).toContain('cache=home');
-    expect(url).toContain('page=2');
+    expect(fetchImpl.mock.calls[0][0]).toBe(buildMoviesUrl(2));
     expect(data.results).toHaveLength(1);
     expect(data.pager.current_page).toBe(2);
   });
