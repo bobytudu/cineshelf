@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/related/:path*",
+      "destination": "https://api2.imdb4.shop/api/related/:path*"
+    },
+    {
+      "source": "/api/search2/:path*",
+      "destination": "https://api2.imdb4.shop/api/search2/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://api2.imdb3.shop/api/:path*"
+    }
+  ]
+}

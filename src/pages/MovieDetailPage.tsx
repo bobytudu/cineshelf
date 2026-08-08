@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { AppShell } from '@astryxdesign/core/AppShell';
 import { AspectRatio } from '@astryxdesign/core/AspectRatio';
 import { Button } from '@astryxdesign/core/Button';
 import { Grid } from '@astryxdesign/core/Grid';
@@ -14,6 +13,7 @@ import { fetchMovieDetail, type MovieDetail } from '../api/movieDetail';
 import { fetchRelatedMovies } from '../api/related';
 import type { Movie } from '../api/movies';
 import { MovieCard } from '../components/MovieCard';
+import { PageShell } from '../components/PageShell';
 
 export function MovieDetailPage() {
   const { id } = useParams();
@@ -68,8 +68,14 @@ export function MovieDetailPage() {
   }, [id, reloadKey]);
 
   return (
-    <AppShell height="auto" contentPadding={4}>
-      <VStack gap={6} maxWidth={1152} width="100%">
+    <PageShell>
+      <VStack
+        gap={6}
+        maxWidth={1152}
+        width="100%"
+        hAlign="center"
+        className="mx-auto"
+      >
         <Link href="/" isStandalone>
           Back to movies
         </Link>
@@ -116,7 +122,7 @@ export function MovieDetailPage() {
               ) : null}
             </VStack>
 
-            <VStack gap={3}>
+            <VStack gap={3} width="100%">
               <Heading level={2}>Related</Heading>
               {relatedStatus === 'loading' ? (
                 <Text color="secondary">Loading related movies…</Text>
@@ -138,6 +144,6 @@ export function MovieDetailPage() {
           </>
         ) : null}
       </VStack>
-    </AppShell>
+    </PageShell>
   );
 }

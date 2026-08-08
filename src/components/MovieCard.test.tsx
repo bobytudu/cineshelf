@@ -45,6 +45,8 @@ describe('MovieCard', () => {
 
     const link = screen.getByRole('link', { name: /bhai tera star hai/i });
     expect(link).toHaveAttribute('href', '/movie/122807');
-    expect(screen.getByText(/2026 · 6\.1/)).toBeInTheDocument();
+    expect(screen.getByText('Bhai Tera Star Hai')).toBeInTheDocument();
+    expect(screen.getByText('2026 · 6.1 · Hindi')).toBeInTheDocument();
   });
 });
+

@@ -16,7 +16,13 @@ describe('buildMoviesUrl', () => {
     expect(absolute).toContain('https://api2.imdb3.shop/api/movies/filter?');
     expect(absolute).toContain('page=2');
   });
+
+  it('adds type filter when category is not all', () => {
+    expect(buildMoviesUrl(0, { type: 'movie' })).toContain('type=movie');
+    expect(buildMoviesUrl(0, { type: 'all' })).not.toContain('type=');
+  });
 });
+
 
 describe('fetchMovies', () => {
   it('requests the filter API with fixed filters and page', async () => {

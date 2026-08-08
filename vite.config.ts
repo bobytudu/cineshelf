@@ -11,6 +11,10 @@ export default defineConfig({
         target: 'https://api2.imdb4.shop',
         changeOrigin: true,
       },
+      '/api/search2': {
+        target: 'https://api2.imdb4.shop',
+        changeOrigin: true,
+      },
       '/api': {
         target: 'https://api2.imdb3.shop',
         changeOrigin: true,

@@ -27,7 +27,7 @@ const ABSOLUTE_BASE = 'https://api2.imdb3.shop/api/movies/filter';
 
 export function buildMoviesUrl(
   page: number,
-  options?: { absolute?: boolean },
+  options?: { absolute?: boolean; type?: string },
 ): string {
   const base = options?.absolute ? ABSOLUTE_BASE : RELATIVE_BASE;
   const url = new URL(base, 'https://api2.imdb3.shop');
@@ -37,6 +37,9 @@ export function buildMoviesUrl(
   url.searchParams.set('items_per_page', '30');
   url.searchParams.set('cache', 'home');
   url.searchParams.set('page', String(page));
+  if (options?.type && options.type !== 'all') {
+    url.searchParams.set('type', options.type);
+  }
   if (options?.absolute) {
     return url.toString();
   }
@@ -45,10 +48,11 @@ export function buildMoviesUrl(
 
 export async function fetchMovies(options: {
   page: number;
+  type?: string;
   fetchImpl?: typeof fetch;
 }): Promise<MoviesFilterResponse> {
-  const { page, fetchImpl = fetch } = options;
-  const res = await fetchImpl(buildMoviesUrl(page));
+  const { page, type, fetchImpl = fetch } = options;
+  const res = await fetchImpl(buildMoviesUrl(page, { type }));
   if (!res.ok) {
     throw new Error(`Failed to fetch movies (${res.status})`);
   }

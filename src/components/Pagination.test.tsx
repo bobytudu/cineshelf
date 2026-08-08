@@ -15,36 +15,33 @@ function renderPagination(props: ComponentProps<typeof Pagination>) {
 }
 
 describe('Pagination', () => {
-  it('shows 1-based page label and disables edges', async () => {
+  it('renders numbered pages and changes page', async () => {
     const user = userEvent.setup();
-    const onPrev = vi.fn();
-    const onNext = vi.fn();
+    const onPageChange = vi.fn();
 
-    const { rerender } = renderPagination({
-      currentPage: 0,
-      totalPages: 5,
-      onPrev,
-      onNext,
+    renderPagination({
+      currentPage: 2,
+      totalPages: 20,
+      onPageChange,
     });
 
-    expect(screen.getByText('Page 1 of 5')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
-    await user.click(screen.getByRole('button', { name: /next/i }));
-    expect(onNext).toHaveBeenCalledOnce();
+    expect(
+      screen.getByRole('button', { name: 'Go to page 3' }),
+    ).toHaveAttribute('aria-current', 'page');
+    expect(
+      screen.getByRole('button', { name: 'Go to page 20' }),
+    ).toBeInTheDocument();
 
-    rerender(
-      <Theme theme={neutralTheme}>
-        <Pagination
-          currentPage={4}
-          totalPages={5}
-          onPrev={onPrev}
-          onNext={onNext}
-        />
-      </Theme>,
-    );
-    expect(screen.getByText('Page 5 of 5')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
-    await user.click(screen.getByRole('button', { name: /previous/i }));
-    expect(onPrev).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole('button', { name: 'Go to page 4' }));
+    expect(onPageChange).toHaveBeenCalledWith(3);
+  });
+
+  it('hides when there is only one page', () => {
+    renderPagination({
+      currentPage: 0,
+      totalPages: 1,
+      onPageChange: vi.fn(),
+    });
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 });

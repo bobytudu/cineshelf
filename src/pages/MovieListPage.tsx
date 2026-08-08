@@ -1,22 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@astryxdesign/core/Button';
 import { Grid } from '@astryxdesign/core/Grid';
 import { Heading } from '@astryxdesign/core/Heading';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
-import { fetchMovies, type Movie, type MoviesPager } from '../api/movies';
-import { searchMovies } from '../api/search';
+import { fetchMovieList } from '../api/movieList';
+import type { Movie, MoviesPager } from '../api/movies';
 import { parsePageParam } from '../lib/pageParam';
 import { MovieCard } from '../components/MovieCard';
 import { PageShell } from '../components/PageShell';
 import { Pagination } from '../components/Pagination';
 
-export function HomePage() {
+export function MovieListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parsePageParam(searchParams.get('page'));
-  const category = searchParams.get('category') ?? 'all';
-  const query = (searchParams.get('q') ?? '').trim();
 
   const [movies, setMovies] = useState<Movie[]>([]);
   const [pager, setPager] = useState<MoviesPager | null>(null);
@@ -29,11 +27,7 @@ export function HomePage() {
     setStatus('loading');
     setError(null);
 
-    const request = query
-      ? searchMovies({ query, page })
-      : fetchMovies({ page, type: category });
-
-    request
+    fetchMovieList({ page })
       .then((data) => {
         if (cancelled) return;
         setMovies(data.results);
@@ -49,12 +43,7 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [page, category, query, reloadKey]);
-
-  const visibleMovies = useMemo(() => {
-    if (!query || category === 'all') return movies;
-    return movies.filter((movie) => movie.media_type === category);
-  }, [movies, query, category]);
+  }, [page, reloadKey]);
 
   function goToPage(next: number) {
     const params = new URLSearchParams(searchParams);
@@ -73,7 +62,7 @@ export function HomePage() {
         className="mx-auto"
       >
         <Heading level={1} type="display-2" justify="center">
-          {query ? `Results for “${query}”` : 'Movies'}
+          Movie
         </Heading>
 
         {status === 'loading' ? (
@@ -96,18 +85,18 @@ export function HomePage() {
 
         {status === 'ready' ? (
           <VStack gap={2} width="100%">
-            {visibleMovies.length === 0 ? (
+            {movies.length === 0 ? (
               <Text color="secondary" justify="center">
-                No movies match your search.
+                No movies found.
               </Text>
             ) : (
               <Grid columns={{ minWidth: 280, max: 3 }} gap={4} width="100%">
-                {visibleMovies.map((movie) => (
+                {movies.map((movie) => (
                   <MovieCard key={movie.id} movie={movie} />
                 ))}
               </Grid>
             )}
-            {pager && !(query && category !== 'all') ? (
+            {pager ? (
               <Pagination
                 currentPage={pager.current_page}
                 totalPages={pager.total_pages}

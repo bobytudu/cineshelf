@@ -4,9 +4,15 @@ import { ClickableCard } from '@astryxdesign/core/ClickableCard';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import type { Movie } from '../api/movies';
+import {
+  displayTitleFromMovieTitle,
+  languageFromMovieTitle,
+} from '../lib/movieTitle';
 
 export function MovieCard({ movie }: { movie: Movie }) {
   const [imgFailed, setImgFailed] = useState(false);
+  const title = displayTitleFromMovieTitle(movie.title);
+  const language = languageFromMovieTitle(movie.title);
 
   return (
     <ClickableCard
@@ -30,24 +36,16 @@ export function MovieCard({ movie }: { movie: Movie }) {
           )}
         </AspectRatio>
         <VStack gap={1} padding={3}>
-          <Text maxLines={2}>{movie.title}</Text>
-          <HMeta releaseDate={movie.release_date} rating={movie.vote_average} />
+          <Text type="large" weight="bold" maxLines={2}>
+            {title}
+          </Text>
+          <Text type="supporting" color="secondary">
+            {[movie.release_date, movie.vote_average, language]
+              .filter(Boolean)
+              .join(' · ')}
+          </Text>
         </VStack>
       </VStack>
     </ClickableCard>
-  );
-}
-
-function HMeta({
-  releaseDate,
-  rating,
-}: {
-  releaseDate: string;
-  rating: string;
-}) {
-  return (
-    <Text type="supporting" color="secondary">
-      {releaseDate} · {rating}
-    </Text>
   );
 }
