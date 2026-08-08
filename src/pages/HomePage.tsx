@@ -72,7 +72,8 @@ export function HomePage() {
         hAlign="center"
         className="mx-auto"
       >
-        <Heading level={1} type="display-2" justify="center">
+        <div className='p-5 bg-red-500'></div>
+        <Heading level={1} type="display-2" justify="center" className='pt-3'>
           {query ? `Results for “${query}”` : 'Movies'}
         </Heading>
 
