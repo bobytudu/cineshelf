@@ -5,8 +5,8 @@ export type Movie = {
   release_date: string;
   media_type: string;
   vote_average: string;
-  channel: string;
-  cn: string;
+  channel?: string;
+  cn?: string;
 };
 
 export type MoviesPager = {

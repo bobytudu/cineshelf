@@ -7,6 +7,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
+      '/api/related': {
+        target: 'https://api2.imdb4.shop',
+        changeOrigin: true,
+      },
       '/api': {
         target: 'https://api2.imdb3.shop',
         changeOrigin: true,
